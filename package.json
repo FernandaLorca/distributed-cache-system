@@ -1,8 +1,9 @@
 {
-  "name": "tarea-01",
+  "name": "distributed-cache-system",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "dev": "nodemon src/index.js"
   },
