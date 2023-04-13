@@ -7,18 +7,18 @@ services:
       - "6379:6379"
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
-      - REDIS_MAXMEMORY_POLICY=allkeys-lry
+      - REDIS_MAXMEMORY_POLICY=allkeys-lru
   redis2:
     image: bitnami/redis:7.0.10
     ports:
       - "6380:6379"
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
-      - REDIS_MAXMEMORY_POLICY=allkeys-lry
+      - REDIS_MAXMEMORY_POLICY=allkeys-lru
   redis3:
     image: bitnami/redis:7.0.10
     ports:
       - "6381:6379"
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
-      - REDIS_MAXMEMORY_POLICY=allkeys-lry
+      - REDIS_MAXMEMORY_POLICY=allkeys-lru
