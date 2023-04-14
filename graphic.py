@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-with open('response_times.txt', 'r') as archivo:
+with open('response-times.txt', 'r') as archivo:
     times = archivo.read()
     data = [float(dato) for dato in times.split()]
 

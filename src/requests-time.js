@@ -1,25 +1,25 @@
 import fetch from 'node-fetch';
-import { writeFileSync } from 'fs';
+import { appendFileSync } from 'fs';
 
-const urlApi = "https://api.sampleapis.com/movies/"
+const url = "https://api.sampleapis.com/movies/comedy/"
 
-const endPoints = ["animation", "classic", "comedy", "drama",
-  "horror", "family", "mystery", "western"] //faltan 2
+// const endPoints = ["animation", "classic", "comedy", "drama",
+//   "horror", "family", "mystery", "western"] //faltan 2
 
 async function fetchData() {
   try {
-    movie = generateEndPointsRandom();
-    const response = await fetch(`${urlApi}${movie[0]}/${movie[1]}`);
+    let id = generateRandom(1,87);
+    console.log(id);
+    const response = await fetch(`${url}${id}`);
     if (!response.ok) {
       throw new Error('Error en la respuesta del servidor: ' + response.status);
     }
     const data = await response.json();
-    //console.log(data);
+    console.log(data);
   } catch (error) {
     console.error('Error al obtener los datos: ' + error);
   }
 }
-
 
 function generateRandom(min, max) {
 
@@ -40,7 +40,7 @@ function generateEndPointsRandom() {
 
   return movie;
 }
-/****** 100 peticiones para evaluar la api *****/
+
 async function makeRequests(n) {
   const responseTimes = [];
   for (let i = 0; i < n; i++) {
@@ -49,25 +49,18 @@ async function makeRequests(n) {
     const endTime = new Date().getTime();
     const responseTime = endTime - startTime;
     console.log("Petición " + (i + 1) + ": " + responseTime + " ms");
-    responseTimes.push(responseTime);
-  }
-  return responseTimes;
-}
-
-const n = 5000; // número de consultas
-makeRequests(n)
-  .then(responseTimes => {
-    console.log('Arreglo de tiempos de respuesta:', responseTimes);
-    const contenido = responseTimes.join('\n');
-    writeFileSync('response_times.txt', contenido, err => {
+    // responseTimes.push(responseTime);
+    let time = responseTime + "\n"
+    appendFileSync('response-times.txt', time, err => {
       if (err) {
         console.error(err);
         return;
       }
     })
-  })
-  .catch(error => {
-    console.error('Error al obtener los datos: ' + error);
-  });
+  }
+  //   return responseTimes;
+}
 
-/*********************************************/
+const n = 5000; // número de consultas
+makeRequests(n)
+
