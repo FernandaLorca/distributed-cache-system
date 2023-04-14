@@ -1,9 +1,15 @@
 import fetch from 'node-fetch';
 import { writeFileSync } from 'fs';
 
+const urlApi = "https://api.sampleapis.com/movies/"
+
+const endPoints = ["animation", "classic", "comedy", "drama",
+  "horror", "family", "mystery", "western"] //faltan 2
+
 async function fetchData() {
   try {
-    const response = await fetch('https://api.sampleapis.com/movies/drama');
+    movie = generateEndPointsRandom();
+    const response = await fetch(`${urlApi}${movie[0]}/${movie[1]}`);
     if (!response.ok) {
       throw new Error('Error en la respuesta del servidor: ' + response.status);
     }
@@ -14,6 +20,26 @@ async function fetchData() {
   }
 }
 
+
+function generateRandom(min, max) {
+
+  min = Math.ceil(min);
+  max = Math.floor(max);
+
+  const number = Math.floor(Math.random() * (max - min + 1)) + min
+
+  return number;
+}
+
+function generateEndPointsRandom() {
+  let movie = [];
+  let numberType = generateRandom(0, 7);
+  let numberID = generateRandom(1, 66);
+  movie.push(endPoints[numberType]);
+  movie.push(numberID);
+
+  return movie;
+}
 /****** 100 peticiones para evaluar la api *****/
 async function makeRequests(n) {
   const responseTimes = [];
@@ -22,13 +48,13 @@ async function makeRequests(n) {
     await fetchData();
     const endTime = new Date().getTime();
     const responseTime = endTime - startTime;
-    console.log("Petición " + (i+1) + ": " + responseTime + " ms"); 
+    console.log("Petición " + (i + 1) + ": " + responseTime + " ms");
     responseTimes.push(responseTime);
   }
   return responseTimes;
 }
 
-const n = 100; // número de consultas
+const n = 5000; // número de consultas
 makeRequests(n)
   .then(responseTimes => {
     console.log('Arreglo de tiempos de respuesta:', responseTimes);
@@ -43,5 +69,5 @@ makeRequests(n)
   .catch(error => {
     console.error('Error al obtener los datos: ' + error);
   });
-  
-/*********************************************/       
+
+/*********************************************/

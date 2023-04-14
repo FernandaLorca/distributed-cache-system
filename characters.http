@@ -1,0 +1,13 @@
+GET http://localhost:3000/movies/3
+
+GET http://localhost:3000/movies/45
+
+GET http://localhost:3000/movies/37
+
+GET http://localhost:3000/movies/23
+
+GET http://localhost:3000/movies/10
+
+GET http://localhost:3000/movies/54
+
+GET http://localhost:3000/movies/67
