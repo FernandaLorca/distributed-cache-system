@@ -1,16 +1,17 @@
 import fetch from 'node-fetch';
 import { appendFileSync } from 'fs';
 
-const url = "https://api.sampleapis.com/movies/comedy/"
-
-// const endPoints = ["animation", "classic", "comedy", "drama",
-//   "horror", "family", "mystery", "western"] //faltan 2
+const url = "https://api.sampleapis.com/movies/"
+const endPoints = ["animation", "classic", "comedy", "drama",
+  "horror", "family", "mystery", "western"]
 
 async function fetchData() {
   try {
-    let id = generateRandom(1,87);
+    let movie = generateEndPointsRandom();
+    let type = movie[0];
+    let id = movie[1];
     console.log(id);
-    const response = await fetch(`${url}${id}`);
+    const response = await fetch(`${url}${type}/${id}`);
     if (!response.ok) {
       throw new Error('Error en la respuesta del servidor: ' + response.status);
     }
@@ -22,12 +23,9 @@ async function fetchData() {
 }
 
 function generateRandom(min, max) {
-
   min = Math.ceil(min);
   max = Math.floor(max);
-
   const number = Math.floor(Math.random() * (max - min + 1)) + min
-
   return number;
 }
 
@@ -42,14 +40,12 @@ function generateEndPointsRandom() {
 }
 
 async function makeRequests(n) {
-  const responseTimes = [];
   for (let i = 0; i < n; i++) {
     const startTime = new Date().getTime();
     await fetchData();
     const endTime = new Date().getTime();
     const responseTime = endTime - startTime;
     console.log("Petición " + (i + 1) + ": " + responseTime + " ms");
-    // responseTimes.push(responseTime);
     let time = responseTime + "\n"
     appendFileSync('response-times.txt', time, err => {
       if (err) {
@@ -58,7 +54,6 @@ async function makeRequests(n) {
       }
     })
   }
-  //   return responseTimes;
 }
 
 const n = 5000; // número de consultas

@@ -5,26 +5,34 @@ services:
     image: bitnami/redis:7.0.10
     ports:
       - "6379:6379"
-    # volumes:
-    #   - ./redis1:/bitnami/redis/data
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
-      - REDIS_MAXMEMORY_POLICY=allkeys-lru
+
+    command: /opt/bitnami/scripts/redis/run.sh 
+            --appendonly no 
+            --stop-writes-on-bgsave-error no
+            --maxmemory 1mb 
+            --maxmemory-policy allkeys-lru 
+            
   redis2:
     image: bitnami/redis:7.0.10
     ports:
       - "6380:6379"
-    # volumes:
-    #   - ./redis2:/bitnami/redis/data
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
-      - REDIS_MAXMEMORY_POLICY=allkeys-lru
+    command: /opt/bitnami/scripts/redis/run.sh 
+        --appendonly no 
+        --stop-writes-on-bgsave-error no
+        --maxmemory 1mb 
+        --maxmemory-policy allkeys-lru 
   redis3:
     image: bitnami/redis:7.0.10
     ports:
       - "6381:6379"
-    # volumes:
-    #   - ./redis3:/bitnami/redis/data
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
-      - REDIS_MAXMEMORY_POLICY=allkeys-lru
+    command: /opt/bitnami/scripts/redis/run.sh 
+        --appendonly no 
+        --stop-writes-on-bgsave-error no
+        --maxmemory 1mb 
+        --maxmemory-policy allkeys-lru

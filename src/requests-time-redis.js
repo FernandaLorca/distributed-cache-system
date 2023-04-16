@@ -14,100 +14,102 @@ await redis1.connect();
 await redis2.connect();
 await redis3.connect();
 
-const url = "https://api.sampleapis.com/movies/comedy"
+const url = "https://api.sampleapis.com/movies/"
 
-// const endPoints = ["animation", "classic", "comedy", "drama",
-//     "horror", "family", "mystery", "western"] //faltan 2
+const endPoints = ["animation", "classic", "comedy", "drama",
+  "horror", "family", "mystery", "western"]
 
 async function fetchData() {
-    try {
-        let id = generateRandom(1,87);
-        let key = "comedy-" + id;
-        console.log("URL: " + key)
-        const check = await checkRedisData(id, key);
-        console.log("Value check: " + check)
-        if (check.length == 0) {
-            const response = await fetch(`${url}${id}`);
-            if (!response.ok) {
-              throw new Error('Error en la respuesta del servidor: ' + response.status);
-            }
-            const content = await response.text();
-      
-            if (id > 0 && id < 30) {                          //se guarda en redis1
-              await redis1.set(key, JSON.stringify(content))
-            } else if (id > 29 && id < 59) {                  //se guarda en redis2
-              await redis2.set(key, JSON.stringify(content))
-            } else {                                          //se guarda en redis3
-              await redis3.set(key, JSON.stringify(content))
-            }
-          } 
-    } catch (error) {
-        console.error('Error al obtener los datos: ' + error);
+  try {
+    let movie = generateEndPointsRandom();
+    let type = movie[0];
+    let id = movie[1];
+    let key = type + "-" + id;
+    console.log("URL: " + key)
+    const check = await checkRedisData(id, key);
+    console.log("Value check: " + check)
+    if (check.length == 0) {
+      const response = await fetch(`${url}${type}/${id}`);
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor: ' + response.status);
+      }
+      const content = await response.text();
+
+      if (id > 0 && id < 23) {
+        await redis1.set(key, content, {EX: 10000})
+      } else if (id > 22 && id < 45) {
+        await redis2.set(key, content, {EX: 10000})
+      } else {
+        await redis3.set(key, content, {EX: 10000})
+      }
     }
+  } catch (error) {
+    console.error('Error al obtener los datos: ' + error);
+  }
 }
 
 
 function generateRandom(min, max) {
 
-    min = Math.ceil(min);
-    max = Math.floor(max);
+  min = Math.ceil(min);
+  max = Math.floor(max);
 
-    const number = Math.floor(Math.random() * (max - min + 1)) + min
+  const number = Math.floor(Math.random() * (max - min + 1)) + min
 
-    return number;
+  return number;
 }
 
 function generateEndPointsRandom() {
-    let movie = [];
-    let numberType = generateRandom(0, 7);
-    let numberID = generateRandom(1, 66);
-    movie.push(endPoints[numberType]);
-    movie.push(numberID);
+  let movie = [];
+  let numberType = generateRandom(0, 7);
+  let numberID = generateRandom(1, 66);
+  movie.push(endPoints[numberType]);
+  movie.push(numberID);
 
-    return movie;
+  return movie;
 }
 
 async function checkRedisData(id, key) {
-    let dataRedis = "";
+  let dataRedis = "";
 
-    if (id > 0 && id < 28) { //se guarda en redis1
-        const value = await redis1.get(key);
-        if (value != null) {
-            dataRedis = value;
-        }
-    } else if (id > 27 && id < 55) {
-        const value = await redis2.get(key);
-        if (value != null) {
-            dataRedis = value;
-        }
-    } else {
-        const value = await redis3.get(key);
-        if (value != null) {
-            dataRedis = value;
-        }
+  if (id > 0 && id < 28) { //se guarda en redis1
+    const value = await redis1.get(key);
+    if (value != null) {
+      dataRedis = value;
     }
+  } else if (id > 27 && id < 55) {
+    const value = await redis2.get(key);
+    if (value != null) {
+      dataRedis = value;
+    }
+  } else {
+    const value = await redis3.get(key);
+    if (value != null) {
+      dataRedis = value;
+    }
+  }
 
-    return dataRedis;
+  return dataRedis;
 }
 
 async function makeRequests(n) {
-    for (let i = 0; i < n; i++) {
-      const startTime = new Date().getTime();
-      await fetchData();
-      const endTime = new Date().getTime();
-      const responseTime = endTime - startTime;
-      console.log("Petición " + (i + 1) + ": " + responseTime + " ms");
-      // responseTimes.push(responseTime);
-      let time = responseTime + "\n"
-      appendFileSync('response-times-redis.txt', time, err => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-      })
-    }
+  for (let i = 0; i < n; i++) {
+    const startTime = new Date().getTime();
+    await fetchData();
+    const endTime = new Date().getTime();
+    const responseTime = endTime - startTime;
+    console.log("Petición " + (i + 1) + ": " + responseTime + " ms");
+    // responseTimes.push(responseTime);
+    let time = responseTime + "\n"
+    appendFileSync('response-times-redis.txt', time, err => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+    })
   }
-  
-  const n = 100; // número de consultas
-  makeRequests(n)
+}
+
+const n = 5000; // número de consultas
+makeRequests(n)
 
